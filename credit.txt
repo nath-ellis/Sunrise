@@ -1,0 +1,4 @@
+Title: 1-Bit Pack
+Author: Kenney
+URL: https://kenney.nl/assets/bit-pack
+License: https://creativecommons.org/publicdomain/zero/1.0/
