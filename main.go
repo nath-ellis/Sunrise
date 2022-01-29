@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	BG *ebiten.Image
+	State string = "menu"
+	BG    *ebiten.Image
 )
 
 type Game struct{}
@@ -19,11 +20,26 @@ func init() {
 }
 
 func (g *Game) Update() error {
+	switch State {
+	case "menu":
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			State = "game"
+		}
+	case "game":
+	case "gameOver":
+	}
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(BG, nil)
+
+	switch State {
+	case "menu":
+	case "game":
+	case "gameOver":
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
