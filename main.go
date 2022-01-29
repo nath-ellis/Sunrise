@@ -26,6 +26,7 @@ var (
 	player  Player
 	Space   *resolv.Space
 	Objects []Object
+	Tree1   *ebiten.Image
 )
 
 type Game struct{}
@@ -39,6 +40,8 @@ func init() {
 	player.Obj = resolv.NewObject(622/4, 300/4, 36, 56, "player") // divided by 4 as the image is scaled up by 4
 
 	Space.Add(player.Obj)
+
+	Tree1, _, _ = ebitenutil.NewImageFromFile("assets/tree1.png")
 }
 
 func newObject() {
@@ -94,6 +97,17 @@ func newObject() {
 	}
 }
 
+func drawObjects(screen *ebiten.Image) {
+	for _, o := range Objects {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(o.Obj.X, o.Obj.Y)
+		switch o.Type {
+		case "tree":
+			screen.DrawImage(Tree1, op)
+		}
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -113,6 +127,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	switch State {
 	case "menu":
 	case "game":
+		drawObjects(screen)
+
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(player.Obj.X, player.Obj.Y)
 		op.GeoM.Scale(4, 4)
