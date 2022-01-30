@@ -3,6 +3,7 @@ package main
 import (
 	_ "image/png"
 	"log"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -28,15 +29,18 @@ type Object struct {
 }
 
 var (
-	State   string = "menu"
-	BG      *ebiten.Image
-	player  Player
-	Space   *resolv.Space
-	Objects []Object
-	Tree1   *ebiten.Image
-	Tree2   *ebiten.Image
-	Tree3   *ebiten.Image
-	Tree4   *ebiten.Image
+	State       string = "menu"
+	BG          *ebiten.Image
+	player      Player
+	Space       *resolv.Space
+	Objects     []Object
+	Tree1       *ebiten.Image
+	Tree2       *ebiten.Image
+	Tree3       *ebiten.Image
+	Tree4       *ebiten.Image
+	SpawnRangeX int = 3840
+	SpawnRangeY int = 2160
+	TreeAmount  int = 400
 )
 
 type Game struct{}
@@ -115,10 +119,30 @@ func init() {
 	Tree3, _, _ = ebitenutil.NewImageFromFile("assets/tree3.png")
 	Tree4, _, _ = ebitenutil.NewImageFromFile("assets/tree4.png")
 
-	Objects = append(Objects, Object{resolv.NewObject(float64(60), float64(60), 2, 1, "object"), "tree1"})
-	Objects = append(Objects, Object{resolv.NewObject(float64(150), float64(70), 2, 1, "object"), "tree2"})
-	Objects = append(Objects, Object{resolv.NewObject(float64(210), float64(80), 2, 2, "object"), "tree3"})
-	Objects = append(Objects, Object{resolv.NewObject(float64(300), float64(90), 2, 1, "object"), "tree4"})
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
 
 	for _, o := range Objects {
 		Space.Add(o.Obj)
