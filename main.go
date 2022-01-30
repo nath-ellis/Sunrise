@@ -28,13 +28,15 @@ type Object struct {
 }
 
 var (
-	State      string = "menu"
-	BG         *ebiten.Image
-	player     Player
-	Space      *resolv.Space
-	Objects    []Object
-	Tree1      *ebiten.Image
-	SpawnRange int = 100
+	State   string = "menu"
+	BG      *ebiten.Image
+	player  Player
+	Space   *resolv.Space
+	Objects []Object
+	Tree1   *ebiten.Image
+	Tree2   *ebiten.Image
+	Tree3   *ebiten.Image
+	Tree4   *ebiten.Image
 )
 
 type Game struct{}
@@ -109,8 +111,14 @@ func init() {
 	Space.Add(player.Obj)
 
 	Tree1, _, _ = ebitenutil.NewImageFromFile("assets/tree1.png")
+	Tree2, _, _ = ebitenutil.NewImageFromFile("assets/tree2.png")
+	Tree3, _, _ = ebitenutil.NewImageFromFile("assets/tree3.png")
+	Tree4, _, _ = ebitenutil.NewImageFromFile("assets/tree4.png")
 
-	Objects = append(Objects, Object{resolv.NewObject(float64(50), float64(30), 10, 14, "object"), "tree"})
+	Objects = append(Objects, Object{resolv.NewObject(float64(60), float64(60), 2, 1, "object"), "tree1"})
+	Objects = append(Objects, Object{resolv.NewObject(float64(150), float64(70), 2, 1, "object"), "tree2"})
+	Objects = append(Objects, Object{resolv.NewObject(float64(210), float64(80), 2, 2, "object"), "tree3"})
+	Objects = append(Objects, Object{resolv.NewObject(float64(300), float64(90), 2, 1, "object"), "tree4"})
 
 	for _, o := range Objects {
 		Space.Add(o.Obj)
@@ -122,11 +130,23 @@ func init() {
 func drawObjects(screen *ebiten.Image) {
 	for _, o := range Objects {
 		op := &ebiten.DrawImageOptions{}
-		//op.GeoM.Scale(4, 4)
-		op.GeoM.Translate(o.Obj.X, o.Obj.Y)
 		switch o.Type {
-		case "tree":
+		case "tree1":
+			op.GeoM.Scale(4, 4)
+			op.GeoM.Translate(o.Obj.X-20, o.Obj.Y-52)
 			screen.DrawImage(Tree1, op)
+		case "tree2":
+			op.GeoM.Scale(4, 4)
+			op.GeoM.Translate(o.Obj.X-20, o.Obj.Y-52)
+			screen.DrawImage(Tree2, op)
+		case "tree3":
+			op.GeoM.Scale(4, 4)
+			op.GeoM.Translate(o.Obj.X-16, o.Obj.Y-50)
+			screen.DrawImage(Tree3, op)
+		case "tree4":
+			op.GeoM.Scale(4, 4)
+			op.GeoM.Translate(o.Obj.X-20, o.Obj.Y-52)
+			screen.DrawImage(Tree4, op)
 		}
 	}
 }
