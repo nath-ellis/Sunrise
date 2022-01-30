@@ -104,7 +104,7 @@ func init() {
 	Space = resolv.NewSpace(1280, 720, 1, 1)
 
 	player.Obj = resolv.NewObject(308, 150, 23, 24, "player")
-	player.Speed = 5
+	player.Speed = 3
 	player.Left = false
 	player.Moving = false
 
