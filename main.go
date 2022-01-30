@@ -99,7 +99,7 @@ func charImports() {
 func init() {
 	BG, _, _ = ebitenutil.NewImageFromFile("assets/bg.png")
 
-	Space = resolv.NewSpace(1280, 720, 16, 16)
+	Space = resolv.NewSpace(1280, 720, 1, 1)
 
 	player.Obj = resolv.NewObject(308, 150, 23, 24, "player")
 	player.Speed = 5
@@ -110,7 +110,11 @@ func init() {
 
 	Tree1, _, _ = ebitenutil.NewImageFromFile("assets/tree1.png")
 
-	Objects = append(Objects, Object{resolv.NewObject(float64(50), float64(30), 32, 32, "object"), "tree"})
+	Objects = append(Objects, Object{resolv.NewObject(float64(50), float64(30), 10, 14, "object"), "tree"})
+
+	for _, o := range Objects {
+		Space.Add(o.Obj)
+	}
 
 	charImports()
 }
@@ -118,7 +122,7 @@ func init() {
 func drawObjects(screen *ebiten.Image) {
 	for _, o := range Objects {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Scale(4, 4)
+		//op.GeoM.Scale(4, 4)
 		op.GeoM.Translate(o.Obj.X, o.Obj.Y)
 		switch o.Type {
 		case "tree":
@@ -127,34 +131,44 @@ func drawObjects(screen *ebiten.Image) {
 	}
 }
 
-func move() { // FINISH
+func move() {
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyUp) {
-		for _, o := range Objects {
-			o.Obj.Y += player.Speed
-			o.Obj.Update()
+		if c := player.Obj.Check(0, -player.Speed, "object"); c == nil {
+			for _, o := range Objects {
+				o.Obj.Y += player.Speed
+				o.Obj.Update()
+			}
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyDown) {
-		for _, o := range Objects {
-			o.Obj.Y -= player.Speed
-			o.Obj.Update()
+		if c := player.Obj.Check(0, player.Speed, "object"); c == nil {
+			for _, o := range Objects {
+				o.Obj.Y -= player.Speed
+				o.Obj.Update()
+			}
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
 		player.Left = true
-		for _, o := range Objects {
-			o.Obj.X += player.Speed
-			o.Obj.Update()
+
+		if c := player.Obj.Check(-player.Speed, 0, "object"); c == nil {
+			for _, o := range Objects {
+				o.Obj.X += player.Speed
+				o.Obj.Update()
+			}
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
 		player.Left = false
-		for _, o := range Objects {
-			o.Obj.X -= player.Speed
-			o.Obj.Update()
+
+		if c := player.Obj.Check(player.Speed, 0, "object"); c == nil {
+			for _, o := range Objects {
+				o.Obj.X -= player.Speed
+				o.Obj.Update()
+			}
 		}
 	}
 
