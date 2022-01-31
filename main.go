@@ -4,6 +4,7 @@ import (
 	_ "image/png"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -168,6 +169,8 @@ func init() {
 	charImports()
 
 	Zombie, _, _ = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
+
+	rand.Seed(time.Now().Unix())
 }
 
 // Draws the trees and scenery
@@ -303,8 +306,18 @@ func drawPlayer(screen *ebiten.Image) {
 
 // Creates a new wave
 func newWave() {
-	for i := 0; i < Wave*10; i++ {
-		Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)), float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+	for i := 0; i < Wave*5; i++ {
+		c := rand.Intn(5)
+
+		if c == 1 {
+			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1})
+		} else if c == 2 {
+			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1})
+		} else if c == 3 {
+			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+		} else {
+			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+		}
 	}
 
 	for _, e := range Enemies {
