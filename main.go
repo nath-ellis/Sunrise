@@ -56,6 +56,7 @@ var (
 
 type Game struct{}
 
+// To import the player's sprites
 func charImports() {
 	moving1, _, _ := ebitenutil.NewImageFromFile("assets/player/right/1.png")
 	moving2, _, _ := ebitenutil.NewImageFromFile("assets/player/right/2.png")
@@ -113,6 +114,7 @@ func charImports() {
 	player.IdleR, _, _ = ebitenutil.NewImageFromFile("assets/player/idleR.png")
 }
 
+// Imports assets and prepares the game
 func init() {
 	BG, _, _ = ebitenutil.NewImageFromFile("assets/bg.png")
 
@@ -130,24 +132,28 @@ func init() {
 	Tree3, _, _ = ebitenutil.NewImageFromFile("assets/tree3.png")
 	Tree4, _, _ = ebitenutil.NewImageFromFile("assets/tree4.png")
 
+	// Adds trees (right and down)
 	for i := 0; i < TreeAmount/4; i++ {
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
 	}
+	// Left and Down
 	for i := 0; i < TreeAmount/4; i++ {
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
 	}
+	// Right and Up
 	for i := 0; i < TreeAmount/4; i++ {
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
 		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
 	}
+	// Left and Up
 	for i := 0; i < TreeAmount/4; i++ {
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
 		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
@@ -164,6 +170,7 @@ func init() {
 	Zombie, _, _ = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
 }
 
+// Draws the trees and scenery
 func drawObjects(screen *ebiten.Image) {
 	for _, o := range Objects {
 		op := &ebiten.DrawImageOptions{}
@@ -188,6 +195,7 @@ func drawObjects(screen *ebiten.Image) {
 	}
 }
 
+// For moving the player (moves objects instead of player)
 func move() {
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyUp) {
 		if c := player.Obj.Check(0, -player.Speed, "object"); c == nil {
@@ -260,6 +268,7 @@ func move() {
 
 }
 
+// For drawing the player and its animations
 func drawPlayer(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(player.Obj.X, player.Obj.Y)
@@ -292,6 +301,7 @@ func drawPlayer(screen *ebiten.Image) {
 	}
 }
 
+// Creates a new wave
 func newWave() {
 	for i := 0; i < Wave*10; i++ {
 		Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)), float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
@@ -301,6 +311,7 @@ func newWave() {
 	Wave += 1
 }
 
+// Draws the enemies
 func drawEnemies(screen *ebiten.Image) {
 	for _, e := range Enemies {
 		op := &ebiten.DrawImageOptions{}
@@ -313,6 +324,7 @@ func drawEnemies(screen *ebiten.Image) {
 	}
 }
 
+// Updates and moves the enemies
 func updateEnemies() {
 	for _, e := range Enemies {
 		// Left of player
@@ -348,7 +360,7 @@ func (g *Game) Update() error {
 	case "game":
 		Ticks += 1
 
-		if (Ticks % 60) == 0 {
+		if (Ticks % 60) == 0 { // triggers every second
 			WaveCounter -= 1
 		}
 
