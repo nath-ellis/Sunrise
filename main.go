@@ -28,6 +28,12 @@ type Object struct {
 	Type string
 }
 
+type Enemy struct {
+	Obj   *resolv.Object
+	Type  string
+	Speed int
+}
+
 var (
 	State       string = "menu"
 	BG          *ebiten.Image
@@ -41,6 +47,11 @@ var (
 	SpawnRangeX int = 3840
 	SpawnRangeY int = 2160
 	TreeAmount  int = 400
+	Wave        int = 1
+	Ticks       int = 0
+	Enemies     []Enemy
+	WaveCounter int = 0 // change later
+	Zombie      *ebiten.Image
 )
 
 type Game struct{}
@@ -149,6 +160,8 @@ func init() {
 	}
 
 	charImports()
+
+	Zombie, _, _ = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
 }
 
 func drawObjects(screen *ebiten.Image) {
@@ -182,6 +195,11 @@ func move() {
 				o.Obj.Y += player.Speed
 				o.Obj.Update()
 			}
+
+			for _, e := range Enemies {
+				e.Obj.Y += player.Speed
+				e.Obj.Update()
+			}
 		}
 	}
 
@@ -190,6 +208,11 @@ func move() {
 			for _, o := range Objects {
 				o.Obj.Y -= player.Speed
 				o.Obj.Update()
+			}
+
+			for _, e := range Enemies {
+				e.Obj.Y -= player.Speed
+				e.Obj.Update()
 			}
 		}
 	}
@@ -202,6 +225,11 @@ func move() {
 				o.Obj.X += player.Speed
 				o.Obj.Update()
 			}
+
+			for _, e := range Enemies {
+				e.Obj.X += player.Speed
+				e.Obj.Update()
+			}
 		}
 	}
 
@@ -212,6 +240,11 @@ func move() {
 			for _, o := range Objects {
 				o.Obj.X -= player.Speed
 				o.Obj.Update()
+			}
+
+			for _, e := range Enemies {
+				e.Obj.X -= player.Speed
+				e.Obj.Update()
 			}
 		}
 	}
@@ -259,6 +292,53 @@ func drawPlayer(screen *ebiten.Image) {
 	}
 }
 
+func newWave() {
+	for i := 0; i < Wave*10; i++ {
+		Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)), float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+	}
+
+	WaveCounter = 120
+	Wave += 1
+}
+
+func drawEnemies(screen *ebiten.Image) {
+	for _, e := range Enemies {
+		op := &ebiten.DrawImageOptions{}
+		switch e.Type {
+		case "zombie":
+			op.GeoM.Scale(2, 2)
+			op.GeoM.Translate(e.Obj.X, e.Obj.Y)
+			screen.DrawImage(Zombie, op)
+		}
+	}
+}
+
+func updateEnemies() {
+	for _, e := range Enemies {
+		// Left of player
+		if e.Obj.X <= player.Obj.X {
+			e.Obj.X += float64(e.Speed)
+		}
+
+		// Right of player
+		if e.Obj.X >= player.Obj.X {
+			e.Obj.X -= float64(e.Speed)
+		}
+
+		// Above player
+		if e.Obj.Y <= player.Obj.Y {
+			e.Obj.Y += float64(e.Speed)
+		}
+
+		// Below player
+		if e.Obj.Y >= player.Obj.Y {
+			e.Obj.Y -= float64(e.Speed)
+		}
+
+		e.Obj.Update()
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -266,6 +346,17 @@ func (g *Game) Update() error {
 			State = "game"
 		}
 	case "game":
+		Ticks += 1
+
+		if (Ticks % 60) == 0 {
+			WaveCounter -= 1
+		}
+
+		if WaveCounter <= 0 {
+			newWave()
+		}
+
+		updateEnemies()
 		move()
 	case "gameOver":
 	}
@@ -280,6 +371,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case "menu":
 	case "game":
 		drawPlayer(screen)
+		drawEnemies(screen)
 		drawObjects(screen)
 	case "gameOver":
 	}
