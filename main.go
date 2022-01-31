@@ -307,6 +307,10 @@ func newWave() {
 		Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)), float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
 	}
 
+	for _, e := range Enemies {
+		Space.Add(e.Obj)
+	}
+
 	WaveCounter = 120
 	Wave += 1
 }
@@ -327,8 +331,33 @@ func drawEnemies(screen *ebiten.Image) {
 // Updates and moves the enemies
 func updateEnemies() {
 	for _, e := range Enemies {
+		// Left Collisions
+		if c := e.Obj.Check(float64(e.Speed), 0, "object"); c != nil {
+			e.Obj.Y -= float64(e.Speed)
+			e.Obj.Update()
+			continue
+		}
+		// Right collisisons
+		if c := e.Obj.Check(-float64(e.Speed), 0, "object"); c != nil {
+			e.Obj.Y -= float64(e.Speed)
+			e.Obj.Update()
+			continue
+		}
+		// Above Collisions
+		if c := e.Obj.Check(0, float64(e.Speed), "object"); c != nil {
+			e.Obj.X -= float64(e.Speed)
+			e.Obj.Update()
+			continue
+		}
+		// Below Collison
+		if c := e.Obj.Check(0, -float64(e.Speed), "object"); c != nil {
+			e.Obj.X -= float64(e.Speed)
+			e.Obj.Update()
+			continue
+		}
+
 		// Left of player
-		if e.Obj.X <= player.Obj.X {
+		if e.Obj.X < player.Obj.X {
 			e.Obj.X += float64(e.Speed)
 		}
 
@@ -338,7 +367,7 @@ func updateEnemies() {
 		}
 
 		// Above player
-		if e.Obj.Y <= player.Obj.Y {
+		if e.Obj.Y < player.Obj.Y {
 			e.Obj.Y += float64(e.Speed)
 		}
 
