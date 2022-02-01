@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	_ "image/png"
 	"log"
 	"math"
@@ -23,6 +24,7 @@ type Player struct {
 	Moving    bool
 	MSCool    int
 	MoveStage int
+	ShootCool int
 }
 
 type Object struct {
@@ -34,6 +36,12 @@ type Enemy struct {
 	Obj   *resolv.Object
 	Type  string
 	Speed int
+}
+
+type Bullet struct {
+	Obj  *resolv.Object
+	DirX float64
+	DirY float64
 }
 
 var (
@@ -56,6 +64,7 @@ var (
 	Zombie      *ebiten.Image
 	Gun1        *ebiten.Image
 	Gun2        *ebiten.Image
+	bullets     []Bullet
 )
 
 type Game struct{}
@@ -217,6 +226,11 @@ func move() {
 				e.Obj.Y += player.Speed
 				e.Obj.Update()
 			}
+
+			for _, b := range bullets {
+				b.Obj.Y += player.Speed
+				b.Obj.Update()
+			}
 		}
 	}
 
@@ -231,12 +245,15 @@ func move() {
 				e.Obj.Y -= player.Speed
 				e.Obj.Update()
 			}
+
+			for _, b := range bullets {
+				b.Obj.Y -= player.Speed
+				b.Obj.Update()
+			}
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		//player.Left = true
-
 		if c := player.Obj.Check(-player.Speed, 0, "object"); c == nil {
 			for _, o := range Objects {
 				o.Obj.X += player.Speed
@@ -247,12 +264,15 @@ func move() {
 				e.Obj.X += player.Speed
 				e.Obj.Update()
 			}
+
+			for _, b := range bullets {
+				b.Obj.X += player.Speed
+				b.Obj.Update()
+			}
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
-		//player.Left = false
-
 		if c := player.Obj.Check(player.Speed, 0, "object"); c == nil {
 			for _, o := range Objects {
 				o.Obj.X -= player.Speed
@@ -262,6 +282,11 @@ func move() {
 			for _, e := range Enemies {
 				e.Obj.X -= player.Speed
 				e.Obj.Update()
+			}
+
+			for _, b := range bullets {
+				b.Obj.X -= player.Speed
+				b.Obj.Update()
 			}
 		}
 	}
@@ -432,6 +457,80 @@ func drawWeapon(screen *ebiten.Image) {
 	}
 }
 
+func shoot() {
+	mouseX, mouseY := ebiten.CursorPosition()
+
+	if player.ShootCool > 0 {
+		player.ShootCool -= 1
+	}
+
+	if player.ShootCool <= 0 {
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			dirX := float64(mouseX) - player.Obj.X
+			dirY := float64(mouseY) - player.Obj.Y
+
+			// The directions
+			length := math.Hypot(dirX, dirY)
+
+			if length == 0.0 {
+				dirX = 0
+				dirY = -1
+			} else {
+				dirX = dirX / length
+				dirY = dirY / length
+			}
+
+			// Adds a bullet
+			bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+10, player.Obj.Y+10, 5, 5, "bullet"), dirX, dirY})
+
+			// Adds the hitboxes
+			for _, b := range bullets {
+				Space.Add(b.Obj)
+			}
+
+			player.ShootCool += 25
+		}
+	}
+
+	for _, b := range bullets {
+		xSpeed := b.DirX * 5
+		ySpeed := b.DirY * 5
+
+		if c := b.Obj.Check(xSpeed, ySpeed, "object"); c != nil {
+			tmp := []Bullet{}
+
+			for _, B := range bullets {
+				if b.Obj.X == B.Obj.X && b.Obj.Y == B.Obj.Y {
+					continue
+				}
+
+				tmp = append(tmp, B)
+			}
+
+			bullets = []Bullet{}
+			bullets = tmp
+
+			Space.Remove(b.Obj)
+			break
+		}
+
+		b.Obj.X += xSpeed
+		b.Obj.Y += ySpeed
+
+		b.Obj.Update()
+	}
+}
+
+func drawBullets(screen *ebiten.Image) {
+	t := ebiten.NewImage(5, 5)
+	t.Fill(color.Black)
+	for _, b := range bullets {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(b.Obj.X, b.Obj.Y)
+		screen.DrawImage(t, op)
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -451,6 +550,7 @@ func (g *Game) Update() error {
 
 		updateEnemies()
 		move()
+		shoot()
 	case "gameOver":
 	}
 
@@ -466,6 +566,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		drawWeapon(screen)
 		drawPlayer(screen)
 		drawEnemies(screen)
+		drawBullets(screen)
 		drawObjects(screen)
 	case "gameOver":
 	}
