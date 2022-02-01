@@ -496,7 +496,21 @@ func shoot() {
 		xSpeed := b.DirX * 5
 		ySpeed := b.DirY * 5
 
-		if c := b.Obj.Check(xSpeed, ySpeed, "object"); c != nil {
+		if c := b.Obj.Check(xSpeed, ySpeed, "object", "enemy"); c != nil {
+			if c.HasTags("enemy") {
+				tmp := []Enemy{}
+				for _, e := range Enemies {
+					if c.Objects[0].X == e.Obj.X && c.Objects[0].Y == e.Obj.Y {
+						Space.Remove(e.Obj)
+						continue
+					}
+					tmp = append(tmp, e)
+				}
+
+				Enemies = []Enemy{}
+				Enemies = tmp
+			}
+
 			tmp := []Bullet{}
 
 			for _, B := range bullets {
@@ -511,6 +525,7 @@ func shoot() {
 			bullets = tmp
 
 			Space.Remove(b.Obj)
+
 			break
 		}
 
