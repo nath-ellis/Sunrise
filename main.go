@@ -3,6 +3,7 @@ package main
 import (
 	_ "image/png"
 	"log"
+	"math"
 	"math/rand"
 	"time"
 
@@ -53,6 +54,8 @@ var (
 	Enemies     []Enemy
 	WaveCounter int = 0 // change later
 	Zombie      *ebiten.Image
+	Gun1        *ebiten.Image
+	Gun2        *ebiten.Image
 )
 
 type Game struct{}
@@ -113,6 +116,9 @@ func charImports() {
 
 	player.IdleL, _, _ = ebitenutil.NewImageFromFile("assets/player/idleL.png")
 	player.IdleR, _, _ = ebitenutil.NewImageFromFile("assets/player/idleR.png")
+
+	Gun1, _, _ = ebitenutil.NewImageFromFile("assets/gun1.png")
+	Gun2, _, _ = ebitenutil.NewImageFromFile("assets/gun2.png")
 }
 
 // Imports assets and prepares the game
@@ -229,7 +235,7 @@ func move() {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		player.Left = true
+		//player.Left = true
 
 		if c := player.Obj.Check(-player.Speed, 0, "object"); c == nil {
 			for _, o := range Objects {
@@ -245,7 +251,7 @@ func move() {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
-		player.Left = false
+		//player.Left = false
 
 		if c := player.Obj.Check(player.Speed, 0, "object"); c == nil {
 			for _, o := range Objects {
@@ -393,6 +399,39 @@ func updateEnemies() {
 	}
 }
 
+// For drawing the weapon
+func drawWeapon(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+
+	mouseX, mouseY := ebiten.CursorPosition()
+
+	dirX := float64(mouseX) - player.Obj.X
+	dirY := float64(mouseY) - player.Obj.Y
+
+	length := math.Hypot(dirX, dirY)
+
+	if length == 0.0 {
+		dirX = 0
+		dirY = -1
+	} else {
+		dirX /= length
+		dirY /= length
+	}
+
+	angle := math.Atan2(dirY, dirX)
+	op.GeoM.Translate(20, 0)
+	op.GeoM.Rotate(angle)
+	op.GeoM.Translate(player.Obj.X+10, player.Obj.Y+10)
+
+	if math.Signbit(dirX) {
+		player.Left = true
+		screen.DrawImage(Gun2, op)
+	} else {
+		player.Left = false
+		screen.DrawImage(Gun1, op)
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -424,6 +463,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	switch State {
 	case "menu":
 	case "game":
+		drawWeapon(screen)
 		drawPlayer(screen)
 		drawEnemies(screen)
 		drawObjects(screen)
