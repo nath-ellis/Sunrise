@@ -525,7 +525,6 @@ func shoot() {
 			bullets = tmp
 
 			Space.Remove(b.Obj)
-
 			break
 		}
 
@@ -561,6 +560,10 @@ func (g *Game) Update() error {
 
 		if WaveCounter <= 0 {
 			newWave()
+		}
+
+		if len(Enemies) <= 0 {
+			WaveCounter -= int(WaveCounter/5)
 		}
 
 		updateEnemies()
