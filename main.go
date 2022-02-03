@@ -25,6 +25,7 @@ type Player struct {
 	MSCool    int
 	MoveStage int
 	ShootCool int
+	Damage    int
 }
 
 type Object struct {
@@ -33,9 +34,10 @@ type Object struct {
 }
 
 type Enemy struct {
-	Obj   *resolv.Object
-	Type  string
-	Speed int
+	Obj    *resolv.Object
+	Type   string
+	Speed  int
+	Health int
 }
 
 type Bullet struct {
@@ -125,9 +127,6 @@ func charImports() {
 
 	player.IdleL, _, _ = ebitenutil.NewImageFromFile("assets/player/idleL.png")
 	player.IdleR, _, _ = ebitenutil.NewImageFromFile("assets/player/idleR.png")
-
-	Gun1, _, _ = ebitenutil.NewImageFromFile("assets/gun1.png")
-	Gun2, _, _ = ebitenutil.NewImageFromFile("assets/gun2.png")
 }
 
 // Imports assets and prepares the game
@@ -140,6 +139,7 @@ func init() {
 	player.Speed = 3
 	player.Left = false
 	player.Moving = false
+	player.Damage = 1
 
 	Space.Add(player.Obj)
 
@@ -186,6 +186,9 @@ func init() {
 	Zombie, _, _ = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
 
 	rand.Seed(time.Now().Unix())
+
+	Gun1, _, _ = ebitenutil.NewImageFromFile("assets/gun1.png")
+	Gun2, _, _ = ebitenutil.NewImageFromFile("assets/gun2.png")
 }
 
 // Draws the trees and scenery
@@ -341,13 +344,13 @@ func newWave() {
 		c := rand.Intn(5)
 
 		if c == 1 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1})
+			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
 		} else if c == 2 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1})
+			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
 		} else if c == 3 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
 		} else {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1})
+			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
 		}
 	}
 
@@ -418,6 +421,22 @@ func updateEnemies() {
 		// Below player
 		if e.Obj.Y >= player.Obj.Y {
 			e.Obj.Y -= float64(e.Speed)
+		}
+
+		// If health is 0
+		if e.Health <= 0 {
+			tmp := []Enemy{}
+			for _, e := range Enemies {
+				if e.Health <= 0 {
+					Space.Remove(e.Obj)
+					continue
+				}
+				tmp = append(tmp, e)
+			}
+
+			Enemies = []Enemy{}
+			Enemies = tmp
+			continue
 		}
 
 		e.Obj.Update()
@@ -498,17 +517,11 @@ func shoot() {
 
 		if c := b.Obj.Check(xSpeed, ySpeed, "object", "enemy"); c != nil {
 			if c.HasTags("enemy") {
-				tmp := []Enemy{}
-				for _, e := range Enemies {
+				for i, e := range Enemies {
 					if c.Objects[0].X == e.Obj.X && c.Objects[0].Y == e.Obj.Y {
-						Space.Remove(e.Obj)
-						continue
+						Enemies[i].Health -= player.Damage
 					}
-					tmp = append(tmp, e)
 				}
-
-				Enemies = []Enemy{}
-				Enemies = tmp
 			}
 
 			tmp := []Bullet{}
@@ -563,7 +576,7 @@ func (g *Game) Update() error {
 		}
 
 		if len(Enemies) <= 0 {
-			WaveCounter -= int(WaveCounter/5)
+			WaveCounter -= int(WaveCounter / 5)
 		}
 
 		updateEnemies()
