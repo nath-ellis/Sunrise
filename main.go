@@ -46,6 +46,11 @@ type Bullet struct {
 	DirY float64
 }
 
+type Particle struct {
+	Obj   *resolv.Object
+	Timer int
+}
+
 var (
 	State       string = "menu"
 	BG          *ebiten.Image
@@ -67,6 +72,8 @@ var (
 	Gun1        *ebiten.Image
 	Gun2        *ebiten.Image
 	bullets     []Bullet
+	ParticleImg *ebiten.Image
+	Particles   []Particle
 )
 
 type Game struct{}
@@ -189,6 +196,8 @@ func init() {
 
 	Gun1, _, _ = ebitenutil.NewImageFromFile("assets/gun1.png")
 	Gun2, _, _ = ebitenutil.NewImageFromFile("assets/gun2.png")
+
+	ParticleImg, _, _ = ebitenutil.NewImageFromFile("assets/particle.png")
 }
 
 // Draws the trees and scenery
@@ -234,6 +243,11 @@ func move() {
 				b.Obj.Y += player.Speed
 				b.Obj.Update()
 			}
+
+			for _, p := range Particles {
+				p.Obj.Y += player.Speed
+				p.Obj.Update()
+			}
 		}
 	}
 
@@ -252,6 +266,11 @@ func move() {
 			for _, b := range bullets {
 				b.Obj.Y -= player.Speed
 				b.Obj.Update()
+			}
+
+			for _, p := range Particles {
+				p.Obj.Y -= player.Speed
+				p.Obj.Update()
 			}
 		}
 	}
@@ -272,6 +291,11 @@ func move() {
 				b.Obj.X += player.Speed
 				b.Obj.Update()
 			}
+
+			for _, p := range Particles {
+				p.Obj.X += player.Speed
+				p.Obj.Update()
+			}
 		}
 	}
 
@@ -290,6 +314,11 @@ func move() {
 			for _, b := range bullets {
 				b.Obj.X -= player.Speed
 				b.Obj.Update()
+			}
+
+			for _, p := range Particles {
+				p.Obj.X -= player.Speed
+				p.Obj.Update()
 			}
 		}
 	}
@@ -434,6 +463,8 @@ func updateEnemies() {
 				tmp = append(tmp, e)
 			}
 
+			Particles = append(Particles, Particle{resolv.NewObject(e.Obj.X+10, e.Obj.Y+6, 14, 12, "particle"), 60})
+
 			Enemies = []Enemy{}
 			Enemies = tmp
 			continue
@@ -516,6 +547,7 @@ func shoot() {
 		ySpeed := b.DirY * 5
 
 		if c := b.Obj.Check(xSpeed, ySpeed, "object", "enemy"); c != nil {
+			// If the bullet hits an enemy
 			if c.HasTags("enemy") {
 				for i, e := range Enemies {
 					if c.Objects[0].X == e.Obj.X && c.Objects[0].Y == e.Obj.Y {
@@ -558,6 +590,31 @@ func drawBullets(screen *ebiten.Image) {
 	}
 }
 
+func drawParticles(screen *ebiten.Image) {
+	for i, p := range Particles {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(p.Obj.X, p.Obj.Y)
+
+		screen.DrawImage(ParticleImg, op)
+		Particles[i].Timer -= 1
+
+		if p.Timer <= 0 {
+			tmp := []Particle{}
+
+			for _, P := range Particles {
+				if p.Obj.X == P.Obj.X && p.Obj.Y == P.Obj.Y {
+					continue
+				}
+
+				tmp = append(tmp, P)
+			}
+			Particles = []Particle{}
+			Particles = tmp
+			break
+		}
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -594,6 +651,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	switch State {
 	case "menu":
 	case "game":
+		drawParticles(screen)
 		drawWeapon(screen)
 		drawPlayer(screen)
 		drawEnemies(screen)
