@@ -531,7 +531,7 @@ func shoot() {
 			}
 
 			// Adds a bullet
-			bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+10, player.Obj.Y+10, 5, 5, "bullet"), dirX, dirY})
+			bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+12, player.Obj.Y+12, 5, 5, "bullet"), dirX, dirY})
 
 			// Adds the hitboxes
 			for _, b := range bullets {
@@ -653,9 +653,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case "game":
 		drawParticles(screen)
 		drawWeapon(screen)
+		drawBullets(screen)
 		drawPlayer(screen)
 		drawEnemies(screen)
-		drawBullets(screen)
 		drawObjects(screen)
 	case "gameOver":
 	}
