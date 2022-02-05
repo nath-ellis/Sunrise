@@ -14,18 +14,20 @@ import (
 )
 
 type Player struct {
-	Obj       *resolv.Object
-	Speed     float64
-	IdleL     *ebiten.Image
-	IdleR     *ebiten.Image
-	R         []*ebiten.Image
-	L         []*ebiten.Image
-	Left      bool
-	Moving    bool
-	MSCool    int
-	MoveStage int
-	ShootCool int
-	Damage    int
+	Obj           *resolv.Object
+	Speed         float64
+	IdleL         *ebiten.Image
+	IdleR         *ebiten.Image
+	R             []*ebiten.Image
+	L             []*ebiten.Image
+	Left          bool
+	Moving        bool
+	MSCool        int
+	MoveStage     int
+	ShootCool     int
+	Damage        int
+	Health        int
+	ImmunityTicks int
 }
 
 type Object struct {
@@ -74,6 +76,7 @@ var (
 	bullets     []Bullet
 	ParticleImg *ebiten.Image
 	Particles   []Particle
+	Heart       *ebiten.Image
 )
 
 type Game struct{}
@@ -147,6 +150,8 @@ func init() {
 	player.Left = false
 	player.Moving = false
 	player.Damage = 1
+	player.Health = 10
+	player.ImmunityTicks = 0
 
 	Space.Add(player.Obj)
 
@@ -198,6 +203,8 @@ func init() {
 	Gun2, _, _ = ebitenutil.NewImageFromFile("assets/gun2.png")
 
 	ParticleImg, _, _ = ebitenutil.NewImageFromFile("assets/particle.png")
+
+	Heart, _, _ = ebitenutil.NewImageFromFile("assets/heart.png")
 }
 
 // Draws the trees and scenery
@@ -323,6 +330,7 @@ func move() {
 		}
 	}
 
+	// For drawing the player
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyUp) ||
 		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyDown) ||
 		ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) ||
@@ -330,6 +338,16 @@ func move() {
 		player.Moving = true
 	} else {
 		player.Moving = false
+	}
+
+	// Checks if player is being attacked by an enemy
+	if player.ImmunityTicks <= 0 {
+		if c := player.Obj.Check(0, 0, "enemy"); c != nil {
+			player.Health -= 1
+			player.ImmunityTicks = 10
+		}
+	} else {
+		player.ImmunityTicks -= 1
 	}
 
 }
@@ -615,6 +633,17 @@ func drawParticles(screen *ebiten.Image) {
 	}
 }
 
+func drawHealth(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(5, 5)
+	op.GeoM.Scale(0.8, 0.8)
+
+	for i := 0; i < player.Health; i++ {
+		screen.DrawImage(Heart, op)
+		op.GeoM.Translate(33, 0)
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
@@ -634,6 +663,10 @@ func (g *Game) Update() error {
 
 		if len(Enemies) <= 0 {
 			WaveCounter -= int(WaveCounter / 5)
+		}
+
+		if player.Health <= 0 {
+			State = "gameOver"
 		}
 
 		updateEnemies()
@@ -657,6 +690,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		drawPlayer(screen)
 		drawEnemies(screen)
 		drawObjects(screen)
+		drawHealth(screen)
 	case "gameOver":
 	}
 }
