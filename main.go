@@ -525,6 +525,7 @@ func drawWeapon(screen *ebiten.Image) {
 	}
 }
 
+// For shooting
 func shoot() {
 	mouseX, mouseY := ebiten.CursorPosition()
 
@@ -598,6 +599,7 @@ func shoot() {
 	}
 }
 
+// For drawing bullets
 func drawBullets(screen *ebiten.Image) {
 	t := ebiten.NewImage(5, 5)
 	t.Fill(color.Black)
@@ -608,6 +610,7 @@ func drawBullets(screen *ebiten.Image) {
 	}
 }
 
+// For drawing the particles when an enemy dies
 func drawParticles(screen *ebiten.Image) {
 	for i, p := range Particles {
 		op := &ebiten.DrawImageOptions{}
@@ -633,6 +636,7 @@ func drawParticles(screen *ebiten.Image) {
 	}
 }
 
+// For drawing hearts
 func drawHealth(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(5, 5)
@@ -653,18 +657,22 @@ func (g *Game) Update() error {
 	case "game":
 		Ticks += 1
 
-		if (Ticks % 60) == 0 { // triggers every second
+		// Triggers every second
+		if (Ticks % 60) == 0 {
 			WaveCounter -= 1
 		}
 
+		// New wave
 		if WaveCounter <= 0 {
 			newWave()
 		}
 
+		// Starts a wave sooner if all enemies are dead
 		if len(Enemies) <= 0 {
 			WaveCounter -= int(WaveCounter / 5)
 		}
 
+		// When health is at 0
 		if player.Health <= 0 {
 			State = "gameOver"
 		}
