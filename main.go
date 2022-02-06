@@ -387,7 +387,7 @@ func drawPlayer(screen *ebiten.Image) {
 
 // Creates a new wave
 func newWave() {
-	for i := 0; i < Wave*5; i++ {
+	for i := 0; i < Wave*3; i++ {
 		c := rand.Intn(5)
 
 		if c == 1 {
