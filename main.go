@@ -160,39 +160,6 @@ func init() {
 	Tree3, _, _ = ebitenutil.NewImageFromFile("assets/tree3.png")
 	Tree4, _, _ = ebitenutil.NewImageFromFile("assets/tree4.png")
 
-	// Adds trees (right and down)
-	for i := 0; i < TreeAmount/4; i++ {
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
-	}
-	// Left and Down
-	for i := 0; i < TreeAmount/4; i++ {
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
-	}
-	// Right and Up
-	for i := 0; i < TreeAmount/4; i++ {
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
-		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
-	}
-	// Left and Up
-	for i := 0; i < TreeAmount/4; i++ {
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
-		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
-	}
-
-	for _, o := range Objects {
-		Space.Add(o.Obj)
-	}
-
 	charImports()
 
 	Zombie, _, _ = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
@@ -649,6 +616,7 @@ func drawParticles(screen *ebiten.Image) {
 		Particles[i].Timer -= 1
 
 		if p.Timer <= 0 {
+			Space.Remove(p.Obj)
 			tmp := []Particle{}
 
 			for _, P := range Particles {
@@ -677,10 +645,47 @@ func drawHealth(screen *ebiten.Image) {
 	}
 }
 
+func addTrees() {
+	// Adds trees (right and down)
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	// Left and Down
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	// Right and Up
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+	// Left and Up
+	for i := 0; i < TreeAmount/4; i++ {
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree1"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree2"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 2, "object"), "tree3"})
+		Objects = append(Objects, Object{resolv.NewObject(-float64(rand.Intn(SpawnRangeX)), -float64(rand.Intn(SpawnRangeY)), 2, 1, "object"), "tree4"})
+	}
+
+	// Adds hitboxes
+	for _, o := range Objects {
+		Space.Add(o.Obj)
+	}
+}
+
 func (g *Game) Update() error {
 	switch State {
 	case "menu":
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			addTrees()
 			State = "game"
 		}
 	case "game":
@@ -710,6 +715,40 @@ func (g *Game) Update() error {
 		move()
 		shoot()
 	case "gameOver":
+		// Resets
+		Ticks = 0
+		Wave = 1
+		WaveCounter = 0
+
+		// Removes hitboxes
+		for _, e := range Enemies {
+			Space.Remove(e.Obj)
+		}
+		for _, b := range bullets {
+			Space.Remove(b.Obj)
+		}
+		for _, p := range Particles {
+			Space.Remove(p.Obj)
+		}
+		for _, o := range Objects {
+			Space.Remove(o.Obj)
+		}
+
+		// Removes images
+		Enemies = []Enemy{}
+		bullets = []Bullet{}
+		Particles = []Particle{}
+		Objects = []Object{}
+
+		// Starts the game again
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			addTrees()
+
+			player.Health = 10
+			player.ImmunityTicks = 0
+
+			State = "game"
+		}
 	}
 
 	return nil
