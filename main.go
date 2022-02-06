@@ -344,8 +344,12 @@ func move() {
 
 	// Checks if player is being attacked by an enemy
 	if player.ImmunityTicks <= 0 {
-		if c := player.Obj.Check(0, 0, "enemy"); c != nil {
-			player.Health -= 1
+		if c := player.Obj.Check(0, 0, "zombie", "mini-zombie"); c != nil {
+			if c.HasTags("zombie") {
+				player.Health -= 1
+			} else if c.HasTags("mini-zombie") {
+				player.Health -= 2
+			}
 			player.ImmunityTicks = 10
 		}
 	} else {
@@ -395,28 +399,28 @@ func newWave() {
 
 		if c == 1 {
 			if r == 1 || r == 2 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", 1, 4})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 14, 16, "enemy"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
 			}
 		} else if c == 2 {
 			if r == 1 || r == 2 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", 1, 4})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 14, 16, "enemy"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
 			}
 		} else if c == 3 {
 			if r == 1 || r == 2 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", 1, 4})
 
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 14, 16, "enemy"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
 			}
 		} else {
 			if r == 1 || r == 2 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", 1, 4})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 14, 16, "enemy"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
 			}
 		}
 	}
@@ -592,9 +596,9 @@ func shoot() {
 		xSpeed := b.DirX * 5
 		ySpeed := b.DirY * 5
 
-		if c := b.Obj.Check(xSpeed, ySpeed, "object", "enemy"); c != nil {
+		if c := b.Obj.Check(xSpeed, ySpeed, "object", "zombie", "mini-zombie"); c != nil {
 			// If the bullet hits an enemy
-			if c.HasTags("enemy") {
+			if c.HasTags("zombie", "mini-zombie") {
 				for i, e := range Enemies {
 					if c.Objects[0].X == e.Obj.X && c.Objects[0].Y == e.Obj.Y {
 						Enemies[i].Health -= player.Damage
