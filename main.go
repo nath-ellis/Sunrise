@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	_ "image/png"
 	"log"
 	"math"
@@ -77,6 +76,7 @@ var (
 	ParticleImg *ebiten.Image
 	Particles   []Particle
 	Heart       *ebiten.Image
+	BulletImg   *ebiten.Image
 )
 
 type Game struct{}
@@ -205,6 +205,8 @@ func init() {
 	ParticleImg, _, _ = ebitenutil.NewImageFromFile("assets/particle.png")
 
 	Heart, _, _ = ebitenutil.NewImageFromFile("assets/heart.png")
+
+	BulletImg, _, _ = ebitenutil.NewImageFromFile("assets/bullet.png")
 }
 
 // Draws the trees and scenery
@@ -550,7 +552,11 @@ func shoot() {
 			}
 
 			// Adds a bullet
-			bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+12, player.Obj.Y+12, 5, 5, "bullet"), dirX, dirY})
+			if math.Signbit(dirX) {
+				bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+10, player.Obj.Y+6, 5, 5, "bullet"), dirX, dirY})
+			} else {
+				bullets = append(bullets, Bullet{resolv.NewObject(player.Obj.X+12, player.Obj.Y+12, 5, 5, "bullet"), dirX, dirY})
+			}
 
 			// Adds the hitboxes
 			for _, b := range bullets {
@@ -601,12 +607,10 @@ func shoot() {
 
 // For drawing bullets
 func drawBullets(screen *ebiten.Image) {
-	t := ebiten.NewImage(5, 5)
-	t.Fill(color.Black)
 	for _, b := range bullets {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(b.Obj.X, b.Obj.Y)
-		screen.DrawImage(t, op)
+		screen.DrawImage(BulletImg, op)
 	}
 }
 
@@ -693,8 +697,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case "menu":
 	case "game":
 		drawParticles(screen)
-		drawWeapon(screen)
 		drawBullets(screen)
+		drawWeapon(screen)
 		drawPlayer(screen)
 		drawEnemies(screen)
 		drawObjects(screen)
