@@ -391,15 +391,33 @@ func drawPlayer(screen *ebiten.Image) {
 func newWave() {
 	for i := 0; i < Wave*3; i++ {
 		c := rand.Intn(5)
+		r := rand.Intn(4)
 
 		if c == 1 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+			if r == 1 || r == 2 {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+			} else {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 14, 16, "enemy"), "mini-zombie", 2, 2})
+			}
 		} else if c == 2 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+			if r == 1 || r == 2 {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "enemy"), "zombie", 1, 4})
+			} else {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 14, 16, "enemy"), "mini-zombie", 2, 2})
+			}
 		} else if c == 3 {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+			if r == 1 || r == 2 {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+
+			} else {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 14, 16, "enemy"), "mini-zombie", 2, 2})
+			}
 		} else {
-			Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+			if r == 1 || r == 2 {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "enemy"), "zombie", 1, 4})
+			} else {
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 14, 16, "enemy"), "mini-zombie", 2, 2})
+			}
 		}
 	}
 
@@ -418,6 +436,9 @@ func drawEnemies(screen *ebiten.Image) {
 		switch e.Type {
 		case "zombie":
 			op.GeoM.Scale(2, 2)
+			op.GeoM.Translate(e.Obj.X, e.Obj.Y)
+			screen.DrawImage(Zombie, op)
+		case "mini-zombie":
 			op.GeoM.Translate(e.Obj.X, e.Obj.Y)
 			screen.DrawImage(Zombie, op)
 		}
