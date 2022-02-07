@@ -77,6 +77,9 @@ var (
 	Particles   []Particle
 	Heart       *ebiten.Image
 	BulletImg   *ebiten.Image
+	GameOverImg *ebiten.Image
+	LeftClick   *ebiten.Image
+	Sunrise     *ebiten.Image
 )
 
 type Game struct{}
@@ -174,6 +177,12 @@ func init() {
 	Heart, _, _ = ebitenutil.NewImageFromFile("assets/heart.png")
 
 	BulletImg, _, _ = ebitenutil.NewImageFromFile("assets/bullet.png")
+
+	GameOverImg, _, _ = ebitenutil.NewImageFromFile("assets/game-over.png")
+
+	LeftClick, _, _ = ebitenutil.NewImageFromFile("assets/left-click.png")
+
+	Sunrise, _, _ = ebitenutil.NewImageFromFile("assets/sunrise.png")
 }
 
 // Draws the trees and scenery
@@ -759,6 +768,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	switch State {
 	case "menu":
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(140, 50)
+		screen.DrawImage(Sunrise, op)
+		op.GeoM.Reset()
+		op.GeoM.Scale(3, 3)
+		op.GeoM.Translate(300, 250)
+		screen.DrawImage(LeftClick, op)
 	case "game":
 		drawParticles(screen)
 		drawBullets(screen)
@@ -768,6 +784,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		drawObjects(screen)
 		drawHealth(screen)
 	case "gameOver":
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(215, 50)
+		screen.DrawImage(GameOverImg, op)
+		op.GeoM.Reset()
+		op.GeoM.Scale(3, 3)
+		op.GeoM.Translate(300, 250)
+		screen.DrawImage(LeftClick, op)
 	}
 }
 
