@@ -99,7 +99,7 @@ func (g *Game) Update() error {
 			objects.AddTrees(Space)
 
 			player.Player.Health = 10
-			player.Player.ImmunityTicks = 0
+			player.Player.ImmunityFrames = 0
 
 			State = "game"
 		}
