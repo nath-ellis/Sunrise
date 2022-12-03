@@ -17,13 +17,13 @@ func Update(Space *resolv.Space) {
 		}
 		// Right collisisons
 		if c := e.Obj.Check(-e.Speed, 0, "object"); c != nil {
-			e.Obj.Y -= e.Speed
+			e.Obj.Y += e.Speed
 			e.Obj.Update()
 			continue
 		}
 		// Above Collisions
 		if c := e.Obj.Check(0, e.Speed, "object"); c != nil {
-			e.Obj.X -= e.Speed
+			e.Obj.X += e.Speed
 			e.Obj.Update()
 			continue
 		}
