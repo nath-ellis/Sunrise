@@ -122,6 +122,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		enemies.Draw(screen)
 		objects.Draw(screen)
 		ui.DrawHealth(screen)
+		ui.DrawWaveNumber(screen)
 	case "gameOver":
 		ui.DrawGameOver(screen)
 	}
