@@ -1,6 +1,6 @@
 module github.com/nath-ellis/Sunrise
 
-go 1.17
+go 1.19
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.2.4
