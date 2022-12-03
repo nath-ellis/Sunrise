@@ -11,19 +11,15 @@ import (
 	"github.com/nath-ellis/Sunrise/enemies"
 	"github.com/nath-ellis/Sunrise/objects"
 	"github.com/nath-ellis/Sunrise/player"
+	"github.com/nath-ellis/Sunrise/ui"
 	"github.com/solarlune/resolv"
 )
 
 var (
-	State       string = "menu"
-	BG          *ebiten.Image
-	Space       *resolv.Space
-	Ticks       int = 0
-	Zombie      *ebiten.Image
-	Heart       *ebiten.Image
-	GameOverImg *ebiten.Image
-	LeftClick   *ebiten.Image
-	Sunrise     *ebiten.Image
+	State string = "menu"
+	BG    *ebiten.Image
+	Space *resolv.Space
+	Ticks int = 0
 )
 
 type Game struct{}
@@ -37,26 +33,6 @@ func init() {
 	player.Init(Space)
 
 	rand.Seed(time.Now().Unix())
-
-	Heart, _, _ = ebitenutil.NewImageFromFile("assets/heart.png")
-
-	GameOverImg, _, _ = ebitenutil.NewImageFromFile("assets/game-over.png")
-
-	LeftClick, _, _ = ebitenutil.NewImageFromFile("assets/left-click.png")
-
-	Sunrise, _, _ = ebitenutil.NewImageFromFile("assets/sunrise.png")
-}
-
-// For drawing hearts
-func drawHealth(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(5, 5)
-	op.GeoM.Scale(0.8, 0.8)
-
-	for i := 0; i < player.Player.Health; i++ {
-		screen.DrawImage(Heart, op)
-		op.GeoM.Translate(33, 0)
-	}
 }
 
 func (g *Game) Update() error {
@@ -137,13 +113,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	switch State {
 	case "menu":
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(140, 50)
-		screen.DrawImage(Sunrise, op)
-		op.GeoM.Reset()
-		op.GeoM.Scale(3, 3)
-		op.GeoM.Translate(300, 250)
-		screen.DrawImage(LeftClick, op)
+		ui.DrawMenu(screen)
 	case "game":
 		enemies.DrawParticles(screen, Space)
 		player.DrawBullets(screen)
@@ -151,15 +121,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		player.Draw(screen)
 		enemies.Draw(screen)
 		objects.Draw(screen)
-		drawHealth(screen)
+		ui.DrawHealth(screen)
 	case "gameOver":
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(215, 50)
-		screen.DrawImage(GameOverImg, op)
-		op.GeoM.Reset()
-		op.GeoM.Scale(3, 3)
-		op.GeoM.Translate(300, 250)
-		screen.DrawImage(LeftClick, op)
+		ui.DrawGameOver(screen)
 	}
 }
 
