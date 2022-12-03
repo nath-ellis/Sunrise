@@ -15,27 +15,27 @@ func NewWave(Space *resolv.Space) {
 		switch location {
 		case 1: // Enemies spawn below and to the right of the player
 			if enemyType == 1 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", rand.Float64() + 1, 2})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", rand.Float64(), 4})
 			}
 		case 2: // Enemies spawn above and to the right of the player
 			if enemyType == 1 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 14, 16, "mini-zombie"), "mini-zombie", rand.Float64() + 1, 2})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), float64(rand.Intn(360)+360), 28, 32, "zombie"), "zombie", rand.Float64(), 4})
 			}
 		case 3: // Enemies spawn below and to the left of the player
 			if enemyType == 1 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", rand.Float64() + 1, 2})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(float64(rand.Intn(640)+640), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", rand.Float64(), 4})
 			}
 		case 4: // Enemies spawn above and to the left of the player
 			if enemyType == 1 {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", 2, 2})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 14, 16, "mini-zombie"), "mini-zombie", rand.Float64() + 1, 2})
 			} else {
-				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", 1, 4})
+				Enemies = append(Enemies, Enemy{resolv.NewObject(-float64(rand.Intn(640)), -float64(rand.Intn(360)), 28, 32, "zombie"), "zombie", rand.Float64(), 4})
 			}
 		}
 	}

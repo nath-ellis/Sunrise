@@ -10,48 +10,48 @@ import (
 func Update(Space *resolv.Space) {
 	for _, e := range Enemies {
 		// Left Collisions
-		if c := e.Obj.Check(float64(e.Speed), 0, "object"); c != nil {
-			e.Obj.Y -= float64(e.Speed)
+		if c := e.Obj.Check(e.Speed, 0, "object"); c != nil {
+			e.Obj.Y -= e.Speed
 			e.Obj.Update()
 			continue
 		}
 		// Right collisisons
-		if c := e.Obj.Check(-float64(e.Speed), 0, "object"); c != nil {
-			e.Obj.Y -= float64(e.Speed)
+		if c := e.Obj.Check(-e.Speed, 0, "object"); c != nil {
+			e.Obj.Y -= e.Speed
 			e.Obj.Update()
 			continue
 		}
 		// Above Collisions
-		if c := e.Obj.Check(0, float64(e.Speed), "object"); c != nil {
-			e.Obj.X -= float64(e.Speed)
+		if c := e.Obj.Check(0, e.Speed, "object"); c != nil {
+			e.Obj.X -= e.Speed
 			e.Obj.Update()
 			continue
 		}
 		// Below Collison
-		if c := e.Obj.Check(0, -float64(e.Speed), "object"); c != nil {
-			e.Obj.X -= float64(e.Speed)
+		if c := e.Obj.Check(0, -e.Speed, "object"); c != nil {
+			e.Obj.X -= e.Speed
 			e.Obj.Update()
 			continue
 		}
 
 		// Left of player
 		if e.Obj.X < player.Player.Obj.X {
-			e.Obj.X += float64(e.Speed)
+			e.Obj.X += e.Speed
 		}
 
 		// Right of player
 		if e.Obj.X >= player.Player.Obj.X {
-			e.Obj.X -= float64(e.Speed)
+			e.Obj.X -= e.Speed
 		}
 
 		// Above player
 		if e.Obj.Y < player.Player.Obj.Y {
-			e.Obj.Y += float64(e.Speed)
+			e.Obj.Y += e.Speed
 		}
 
 		// Below player
 		if e.Obj.Y >= player.Player.Obj.Y {
-			e.Obj.Y -= float64(e.Speed)
+			e.Obj.Y -= e.Speed
 		}
 
 		// If health is 0
