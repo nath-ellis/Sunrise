@@ -1,4 +1,4 @@
-module github.com/noxJ/Sunrise
+module github.com/nath-ellis/Sunrise
 
 go 1.17
 
