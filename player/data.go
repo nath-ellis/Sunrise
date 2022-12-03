@@ -7,20 +7,20 @@ import (
 )
 
 type Data struct {
-	Obj           *resolv.Object
-	Speed         float64
-	IdleL         *ebiten.Image
-	IdleR         *ebiten.Image
-	R             []*ebiten.Image
-	L             []*ebiten.Image
-	IsLeft        bool
-	Moving        bool
-	MSCool        int
-	MoveStage     int
-	ShootCool     int
-	Damage        int
-	Health        int
-	ImmunityTicks int
+	Obj            *resolv.Object
+	Speed          float64
+	IdleL          *ebiten.Image
+	IdleR          *ebiten.Image
+	R              []*ebiten.Image
+	L              []*ebiten.Image
+	IsLeft         bool
+	Moving         bool
+	MSCool         int
+	MoveStage      int
+	WeaponCooldown int
+	Damage         int
+	Health         int
+	ImmunityFrames int
 }
 
 type Bullet struct {
@@ -100,7 +100,7 @@ func Init(Space *resolv.Space) {
 	Player.Moving = false
 	Player.Damage = 1
 	Player.Health = 10
-	Player.ImmunityTicks = 0
+	Player.ImmunityFrames = 0
 
 	Space.Add(Player.Obj)
 

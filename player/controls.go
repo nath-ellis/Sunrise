@@ -68,7 +68,7 @@ func Controls() {
 		}
 	}
 
-	// For drawing the Player
+	// For drawing the correct player sprite
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyUp) ||
 		ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyDown) ||
 		ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) ||
@@ -78,18 +78,18 @@ func Controls() {
 		Player.Moving = false
 	}
 
-	// Checks if Player is being attacked by an enemy
-	if Player.ImmunityTicks <= 0 {
+	// Checks if the player is being attacked by an enemy
+	if Player.ImmunityFrames <= 0 {
 		if c := Player.Obj.Check(0, 0, "zombie", "mini-zombie"); c != nil {
 			if c.HasTags("zombie") {
 				Player.Health -= 1
 			} else if c.HasTags("mini-zombie") {
 				Player.Health -= 2
 			}
-			Player.ImmunityTicks = 10
+			Player.ImmunityFrames = 10
 		}
 	} else {
-		Player.ImmunityTicks -= 1
+		Player.ImmunityFrames -= 1
 	}
 
 }
@@ -98,16 +98,16 @@ func Controls() {
 func Shoot(Space *resolv.Space) {
 	mouseX, mouseY := ebiten.CursorPosition()
 
-	if Player.ShootCool > 0 {
-		Player.ShootCool -= 1
+	if Player.WeaponCooldown > 0 {
+		Player.WeaponCooldown -= 1
 	}
 
-	if Player.ShootCool <= 0 {
+	if Player.WeaponCooldown <= 0 {
 		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 			dirX := float64(mouseX) - Player.Obj.X
 			dirY := float64(mouseY) - Player.Obj.Y
 
-			// The directions
+			// The square root of the sum of dirX and dirY
 			length := math.Hypot(dirX, dirY)
 
 			if length == 0.0 {
@@ -119,9 +119,9 @@ func Shoot(Space *resolv.Space) {
 			}
 
 			// Adds a bullet
-			if math.Signbit(dirX) {
+			if math.Signbit(dirX) { // Bullets go left
 				Bullets = append(Bullets, Bullet{resolv.NewObject(Player.Obj.X+10, Player.Obj.Y+6, 5, 5, "bullet"), dirX, dirY})
-			} else {
+			} else { // Bullets go right
 				Bullets = append(Bullets, Bullet{resolv.NewObject(Player.Obj.X+12, Player.Obj.Y+12, 5, 5, "bullet"), dirX, dirY})
 			}
 
@@ -130,7 +130,7 @@ func Shoot(Space *resolv.Space) {
 				Space.Add(b.Obj)
 			}
 
-			Player.ShootCool += 25
+			Player.WeaponCooldown += 25
 		}
 	}
 }
