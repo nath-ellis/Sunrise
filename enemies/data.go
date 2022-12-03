@@ -20,7 +20,7 @@ type Particle struct {
 var (
 	Enemies           []Enemy
 	Particles         []Particle
-	Wave              int = 1
+	Wave              int = 0
 	WaveCounter       int = 0 // change later
 	Zombie, _, _          = ebitenutil.NewImageFromFile("assets/enemies/zombie.png")
 	ParticleImg, _, _     = ebitenutil.NewImageFromFile("assets/particle.png")
