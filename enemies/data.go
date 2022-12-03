@@ -8,7 +8,7 @@ import (
 type Enemy struct {
 	Obj    *resolv.Object
 	Type   string
-	Speed  int
+	Speed  float64
 	Health int
 }
 
